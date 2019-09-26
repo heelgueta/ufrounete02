@@ -1,0 +1,32 @@
+---
+title: "resultados cfas"
+output:
+  html_document:
+    df_print: paged
+---
+
+aca van los resultados de cfas unifactor
+
+```{r}
+library(dplyr)
+dfori <- foreign::read.spss("2019-06-unete2.sav", use.value.labels = FALSE, to.data.frame = TRUE, use.missings = to.data.frame)
+
+mod <- 'bgf =~ b01 + b02 + b03 + b04 + b05 + b06 + b07 + b08 + b09 + b10 + b11' #fit not so good
+
+fitmlr <- lavaan::cfa(mod, data=dfori,estimator="MLR")
+fituls <- lavaan::cfa(mod, data=dfori,estimator="ULSMV")
+
+
+data.frame(
+  tibble::enframe(lavaan::fitMeasures(fitmlr, c("chisq.scaled","df.scaled","pvalue.scaled","cfi.scaled",
+                                "tli.scaled","rmsea.scaled","rmsea.ci.lower.scaled",
+                                "rmsea.ci.upper.scaled")), name = "fit.index")[1],
+  tibble::enframe(round(lavaan::fitMeasures(fitmlr, c("chisq.scaled","df.scaled","pvalue.scaled","cfi.scaled",
+                                      "tli.scaled","rmsea.scaled","rmsea.ci.lower.scaled",
+                                      "rmsea.ci.upper.scaled")), digits = 3), value = "mlr")[2],
+  tibble::enframe(round(lavaan::fitMeasures(fituls, c("chisq.scaled","df.scaled","pvalue.scaled","cfi.scaled",
+                                      "tli.scaled","rmsea.scaled","rmsea.ci.lower.scaled",
+                                      "rmsea.ci.upper.scaled")), digits = 3), value = "ulsmv")[2]) # %>%  DT::datatable(options = list(pageLength = 200))
+
+```
+

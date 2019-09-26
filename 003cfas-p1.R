@@ -134,9 +134,12 @@ data.frame(
                                       "rmsea.ci.upper.scaled")), digits = 3), value = "mlr")[2],
   tibble::enframe(round(lavaan::fitMeasures(fituls, c("chisq.scaled","df.scaled","pvalue.scaled","cfi.scaled",
                                       "tli.scaled","rmsea.scaled","rmsea.ci.lower.scaled",
-                                      "rmsea.ci.upper.scaled")), digits = 3), value = "ulsmv")[2])
+                                      "rmsea.ci.upper.scaled")), digits = 3), value = "ulsmv")[2]) # %>%  DT::datatable(options = list(pageLength = 200))
+
+
+
 #standardized solution
 data.frame(
   lavaan::standardizedSolution(fitmlr)[c(1:3)],
   "mlr" = round(lavaan::standardizedSolution(fitmlr)[c(4,7)],digits=3),
-  "ulsmv" = round(lavaan::standardizedSolution(fituls)[c(4,7)],digits=3))
+  "ulsmv" = round(lavaan::standardizedSolution(fituls)[c(4,7)],digits=3))  # %>%  DT::datatable(options = list(pageLength = 200))

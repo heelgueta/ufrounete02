@@ -5,6 +5,7 @@ options(scipen=999);options(max.print=1000000)
 #install.packages("foreign")
 #install.packages("semTools")
 #install.packages("tidyverse")
+#install.packages("DT")
 #cargar paquetes
 #library(foreign)
 #library(semTools)
