@@ -1,5 +1,5 @@
 ###revisión calidad de los datos
-#HOLa
+
 #revisión rápida descriptivos univariantes
 #ver tabla en consola
 print(data.frame(

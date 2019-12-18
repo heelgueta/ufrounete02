@@ -11,6 +11,8 @@
 #b09	E9 + Me gusta la decorción
 #b10	E10 + Me gusta el estilo de muebles
 #b11	E11 Diseño agradabe
+en el paper anterior los items son:
+  b01 b05 b06 b08 + b09 b10 b03
 
 mod <- 'bgf =~ b01 + b02 + b03 + b04 + b05 + b06 + b07 + b08 + b09 + b10 + b11' #fit not so good
 #fit.index     mlr   ulsmv
@@ -28,6 +30,15 @@ mod <- 'bgf =~ b01 + b03 + b05 + b06 + b08 + b09 + b10'
 #4            cfi.scaled  0.955  0.962
 #5            tli.scaled  0.932  0.943
 #6          rmsea.scaled  0.112  0.098
+mod <- 'bgf =~ b01 + b03 + b06 + b08 + b09'
+#fit.index    mlr  ulsmv
+#1          chisq.scaled 58.433 47.750
+#2             df.scaled 14.000 14.000
+#3         pvalue.scaled  0.000  0.000
+#4            cfi.scaled  0.955  0.962
+#5            tli.scaled  0.932  0.943
+#6          rmsea.scaled  0.112  0.098
+
 
 #c01	JC1 IS + Supervisor satisfecho de mi trabajo
 #c02	JC2 IC oportunidad para hacer nuevos poyectos
@@ -50,6 +61,19 @@ mod <- 'bgf =~ b01 + b03 + b05 + b06 + b08 + b09 + b10'
 #c19	JC19 DH No sea necesario concentrarme
 #c20	JC20 IS Coonsejos a mis compañeros
 #c21	JC21 IC Tareas adicionales
+mod <- 'jcis =~ c01 + c03 + c12 + c16 + c20
+		jcic =~ c02 + c04 + c08 + c15 + c21
+		jcit =~ c05 + c07 + c09 + c13 + c18
+		jcdh =~ c06 + c10 + c11 + c14 + c17 + c19'
+mod <- 'jcis =~ c03 + c12 + c16 + c20
+		    jcic =~ c02 + c04 + c08 + c15
+		    jcit =~ c05 + c09 + c13 + c18
+		    jcdh =~ c06 + c10 + c11 + c14'
+mod <- 'jcis =~ c03 + c12 + c16
+		    jcic =~ c04 + c08 + c15
+		    jcit =~ c05 + c09 + c18
+		    jcdh =~ c06 + c10 + c11'
+
 #d01	Burnout A Emocionalmente agotado
 #d02	Burnout A Consumido al final de un día de trabajo
 #d03	Burnout A Estoy cansado cuando me levanto
@@ -65,6 +89,43 @@ mod <- 'bgf =~ b01 + b03 + b05 + b06 + b08 + b09 + b10'
 #d13	Burnout Cinismo Me he vuelto más cínico
 #d14	Burnout Cinismo Dudo la trascendencia
 #d15	Burnout Eficacia Seguridad de que soy eficaz
+
+mod <- 'burn =~	d01 + d02 + d03 + d04 + d05 + 
+				d06 + d07 + d08 + d09 + d10 + 
+				d11 + d12 + d13 + d14 + d15'
+#fit.index     mlr   ulsmv
+#1          chisq.scaled 578.272 392.477
+#2             df.scaled  90.000  90.000
+#3         pvalue.scaled   0.000   0.000
+#4            cfi.scaled   0.533   0.659
+#5            tli.scaled   0.456   0.602
+#6          rmsea.scaled   0.154   0.121
+#7 rmsea.ci.lower.scaled   0.144   0.109
+#8 rmsea.ci.upper.scaled   0.164   0.134
+mod <- 'burn =~	d01 + d02 + d03 + d04 + 
+				d06 + d08 + d09 + d13 + d14'
+#fit.index     mlr   ulsmv
+#1          chisq.scaled 286.795 234.354
+#2             df.scaled  27.000  27.000
+#3         pvalue.scaled   0.000   0.000
+#4            cfi.scaled   0.674   0.669
+#5            tli.scaled   0.565   0.559
+#6          rmsea.scaled   0.199   0.179
+#7 rmsea.ci.lower.scaled   0.183   0.158
+#8 rmsea.ci.upper.scaled   0.217   0.200
+mod <- 'burn =~	d01 + d02 + d03 + d04 + d06'
+#fit.index    mlr  ulsmv
+#1          chisq.scaled 16.073 15.560
+#2             df.scaled  5.000  5.000
+#3         pvalue.scaled  0.007  0.008
+#4            cfi.scaled  0.975  0.979
+#5            tli.scaled  0.951  0.959
+#6          rmsea.scaled  0.094  0.092
+#7 rmsea.ci.lower.scaled  0.053  0.043
+#8 rmsea.ci.upper.scaled  0.139  0.146
+
+
+
 #e01	Compromiso Me siento bien mi trabajo
 #e02	Compromiso Mas $ podria cambiar de trabajo
 #e03	Compromiso Mi trabajo es importante
@@ -105,6 +166,28 @@ mod <- 'bgf =~ b01 + b03 + b05 + b06 + b08 + b09 + b10'
 #h20	Apoyo de supervisores
 #h21	Grado en que cumplen
 #h22	Forma en que se negocia
+mod <- 'sati =~ h01 + h02 + h03 + h04 + h05 + 
+		  		h06 + h07 + h08 + h09 + h10 + 
+		  		h11 + h12 + h13 + h14 + h15 + 
+		  		h16 + h17 + h18 + h19 + h20 + 
+		  		h21 + h22'
+#fit.index     mlr   ulsmv
+#1          chisq.scaled 838.041 502.683
+#2             df.scaled 209.000 209.000
+#3         pvalue.scaled   0.000   0.000
+#4            cfi.scaled   0.704   0.814
+#5            tli.scaled   0.673   0.795
+#6          rmsea.scaled   0.117   0.080
+#7 rmsea.ci.lower.scaled   0.110   0.071
+#8 rmsea.ci.upper.scaled   0.124   0.089
+mod <- 'sati =~ h01 + h02 + h03 + h04 + h05 + 
+		  		h06 + h07 + h08 + h09 + h10 + 
+		  		h11 + h12 + h13 + h14 + h15 + 
+		  		h16 + h17 + h18 + h19 + h20 + 
+		  		h21 + h22'
+mod <- 'sati =~ h15 + h16 + h17 + h18 + h19 + h20 + h21 + h22'
+mod <- 'sati =~ h15 + h16 + h18 + h19 + h20'
+
 #i01	Género
 #i02	Edad
 #i03	usted mapuche
