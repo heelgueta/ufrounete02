@@ -1,0 +1,126 @@
+---
+title: "Explicación análisis UFRO - Unete 2"
+output: html_notebook
+---
+# 1. Configuración
+Primero hay que configurar algunas cosas, asegurarse de que algunas librerias estén instaladas.
+```{r}
+options(scipen=999);options(max.print=1000000)
+#install.packages("foreign")
+#install.packages("semTools")
+#install.packages("tidyverse")
+#install.packages("DT")
+```
+Luego hay que cargar los datos. Le puse a la matriz de datos "dfori" pensando en "data frame original" (ya que quizás después podemos necesitar versiones diferentes del mismo data frame con algunos propósitos específicos).
+```{r}
+dfori <- foreign::read.spss("2019-06-unete2.sav", use.value.labels = FALSE, to.data.frame = TRUE, use.missings = to.data.frame)
+```
+# 2. CFA
+Habría que realizar algunos análisis para asegurar la calidad de los ítems. Había avanzado esto con anterioridad, así que por ahora asumiremos que los datos están ok para llevar a cabo un cfa. A continuación entonces se define el modelo. Este modelo ocupa los mismos items del paper anterior para "Apreciación estética" y los factores de "job crafting". 
+```{r}
+#se define el modelo
+mod <- 'apest =~ b01 + b03 + b06 + b08 + b09 + b10
+        satsu =~ h15 + h16 + h17 + h18 + h19 + h20
+        jciso =~ c01 + c03 + c16
+        jcich =~ c04 + c08 + c15
+        jcist =~ c09 + c13 + c18
+        jcdhi =~ c06 + c11 + c14'
+```
+Luego se ejecuta/contrasta el modelo y se pueden revisar los índices de ajuste.
+```{r}
+#se ejecuta/contrasta
+fitmlr <- lavaan::cfa(mod, data=dfori,estimator="MLR")
+#utilicé MLR en vez de ULSMV porque algunos items daban problemas al no cumplir algunos supuestos
+#MLR es menos adecuado para datos ordinales, pero tiene menos mañas
+
+#se revisan los resultados del ajuste
+data.frame(
+  tibble::enframe(lavaan::fitMeasures(fitmlr, c("chisq.scaled","df.scaled","pvalue.scaled","cfi.scaled",
+                                                "tli.scaled","rmsea.scaled","rmsea.ci.lower.scaled",
+                                                "rmsea.ci.upper.scaled")), name = "fit.index")[1],
+  tibble::enframe(round(lavaan::fitMeasures(fitmlr, c("chisq.scaled","df.scaled","pvalue.scaled","cfi.scaled",
+                                                      "tli.scaled","rmsea.scaled","rmsea.ci.lower.scaled",
+                                                      "rmsea.ci.upper.scaled")), digits = 3), value = "mlr")[2])
+```
+También se pueden revisar las cargas factoriales y correlaciones entre variables latentes.
+```{r}
+#se revisan las cargas factoriales y correlaciones entre factores
+data.frame(
+  lavaan::standardizedSolution(fitmlr)[c(1:3)],
+  "mlr" = round(lavaan::standardizedSolution(fitmlr)[c(4,7)],digits=3))
+```
+# 3. SEM
+Considerando que el CFA no está tan mal, se define y ejecuta un modelo SEM
+```{r}
+mod <- 'apest =~ b01 + b03 + b06 + b08 + b09 + b10
+        satsu =~ h15 + h16 + h17 + h18 + h19 + h20
+        jciso =~ c01 + c03 + c16
+        jcich =~ c04 + c08 + c15
+        jcist =~ c09 + c13 + c18
+        jcdhi =~ c06 + c11 + c14
+jciso ~ b1*satsu
+jcich ~ b2*satsu
+jcist ~ b3*satsu
+jcdhi ~ b4*satsu
+satsu ~ a1*apest
+ieiso := a1*b1
+ieich := a1*b2
+ieist := a1*b3
+iedhi := a1*b4
+jciso ~~ jcich
+jciso ~~ jcist
+jciso ~~ jcdhi
+jcich ~~ jcist
+jcich ~~ jcdhi
+jcist ~~ jcdhi'
+fitmlr <- lavaan::sem(mod, data=dfori,estimator="MLR")
+```
+Se pueden revisar los índices de ajuste.
+```{r}
+data.frame(
+  tibble::enframe(lavaan::fitMeasures(fitmlr, c("chisq.scaled","df.scaled","pvalue.scaled","cfi.scaled",
+                                                "tli.scaled","rmsea.scaled","rmsea.ci.lower.scaled",
+                                                "rmsea.ci.upper.scaled")), name = "fit.index")[1],
+  tibble::enframe(round(lavaan::fitMeasures(fitmlr, c("chisq.scaled","df.scaled","pvalue.scaled","cfi.scaled",
+                                                      "tli.scaled","rmsea.scaled","rmsea.ci.lower.scaled",
+                                                      "rmsea.ci.upper.scaled")), digits = 3), value = "mlr")[2])
+```
+También se pueden revisar las cargas factoriales, correlaciones y coeficientes de regresión (todo estandarizado acá)
+```{r}
+data.frame(
+  lavaan::standardizedSolution(fitmlr)[c(1:3)],
+  "mlr" = round(lavaan::standardizedSolution(fitmlr)[c(4,7)],digits=3))
+```
+# 4. Estimación de los efectos indirectos usando bootstrap
+Basándonos en el modelo anterior, es pertinente estimar el tamaño de los efectos indirectos usando remuestreo/bootstapping. Para eso necesitamos ponerle un nombre a cada efecto indirecto.
+```{r}
+mod <- 'apest =~ b01 + b03 + b06 + b08 + b09 + b10
+        satsu =~ h15 + h16 + h17 + h18 + h19 + h20
+        jciso =~ c01 + c03 + c16
+        jcich =~ c04 + c08 + c15
+        jcist =~ c09 + c13 + c18
+        jcdhi =~ c06 + c11 + c14
+jciso ~ b1*satsu
+jcich ~ b2*satsu
+jcist ~ b3*satsu
+jcdhi ~ b4*satsu
+satsu ~ a1*apest
+ieiso := a1*b1
+ieich := a1*b2
+ieist := a1*b3
+iedhi := a1*b4
+jciso ~~ jcich
+jciso ~~ jcist
+jciso ~~ jcdhi
+jcich ~~ jcist
+jcich ~~ jcdhi
+jcist ~~ jcdhi'
+fitmlr <- lavaan::sem(mod, data=dfori,estimator="MLR",test = "bootstrap")
+```
+Ahora usamos bootstrap sólo para re-estimar esos objetos del modelo
+```{r}
+data.frame(
+  lavaan::standardizedSolution(fitmlr)[c(1:3)],
+  "mlr" = round(lavaan::standardizedSolution(fitmlr)[c(4,7)],digits=3))
+```
+

@@ -43,11 +43,15 @@ mod <- 'apest =~ b01 + b03 + b06 + b08 + b09 + b10
         jcich =~ c04 + c08 + c15
         jcist =~ c09 + c13 + c18
         jcdhi =~ c06 + c11 + c14
-jciso ~ satsu
-jcich ~ satsu
-jcist ~ satsu
-jcdhi ~ satsu
-satsu ~ apest
+jciso ~ b1*satsu
+jcich ~ b2*satsu
+jcist ~ b3*satsu
+jcdhi ~ b4*satsu
+satsu ~ a1*apest
+ieiso := a1*b1
+ieich := a1*b2
+ieist := a1*b3
+iedhi := a1*b4
 jciso ~~ jcich
 jciso ~~ jcist
 jciso ~~ jcdhi
@@ -55,22 +59,36 @@ jcich ~~ jcist
 jcich ~~ jcdhi
 jcist ~~ jcdhi
 '
+
 mod <- 'apest =~ b01 + b03 + b06 + b08 + b09 + b10
         iself =~ g01
         jciso =~ c01 + c03 + c16
         jcich =~ c04 + c08 + c15
         jcist =~ c09 + c13 + c18
         jcdhi =~ c06 + c11 + c14
-jciso =~ iself
-jcich =~ iself
-jcist =~ iself
-jcdhi =~ iself
-iself =~ apest
+jciso ~ b1*iself
+jcich ~ b2*iself
+jcist ~ b3*iself
+jcdhi ~ b4*iself
+iself ~ a1*apest
+ieiso := a1*b1
+ieich := a1*b2
+ieist := a1*b3
+iedhi := a1*b4
+jciso ~~ jcich
+jciso ~~ jcist
+jciso ~~ jcdhi
+jcich ~~ jcist
+jcich ~~ jcdhi
+jcist ~~ jcdhi
 '
 
 
 fitmlr <- lavaan::sem(mod, data=dfori,estimator="MLR")
+fitmlr <- lavaan::sem(mod, data=dfori,estimator="ML",se="boot",bootstrap=1000)
 
+
+lavaan::summary(fitmlr)
 #fit indices
 
 
@@ -78,6 +96,11 @@ lavaan::fitMeasures(fitmlr, c("chisq.scaled","df.scaled","pvalue.scaled","cfi.sc
                       "tli.scaled","rmsea.scaled","rmsea.ci.lower.scaled",
                       "rmsea.ci.upper.scaled","srmr"))
 
+
+fitboo <- lavaan::bootstrapLavaan(fitmlr, R=10, FUN="coef")
+head(fitboo)
+colnames(fitboo)
+fitboo[(66:69)]
 
 #standardized solution
 
